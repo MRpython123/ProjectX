@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import AngleWheel from './AngleWheel';
+import AngleWheel from './AngleWheel.tsx';
 
 const MainPage = () => {
   const [selectedAngle, setSelectedAngle] = useState(0);

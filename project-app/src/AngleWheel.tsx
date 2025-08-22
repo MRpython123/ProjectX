@@ -11,13 +11,31 @@ USAGE:
 />
 */
 
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 
-import React, { useState, useRef, useEffect } from 'react';
+interface AngleWheelProps {
+  initialAngle?: number;
+  onAngleChange?: (angle: number) => void;
+  currentValue?: number | string | null;
+  valueLabel?: string;
+  valueUnit?: string;
+  title?: string;
+  width?: string;
+  height?: string;
+  stepSize?: number;
+  showInstructions?: boolean;
+}
+
+interface AngleMark {
+  angle: number;
+  position: number;
+  relativePosition: number;
+}
 
 const AngleWheel = ({ 
   initialAngle = 0, 
-  onAngleChange = () => {},
-  currentValue = null,
+  onAngleChange = (angle) => {},
+  currentValue = 0,
   valueLabel = "",
   valueUnit = "",
   title = "Angle Selector",
@@ -64,7 +82,7 @@ const AngleWheel = ({
     setInputValue(e.target.value);
   };
 
-  const handleInputSubmit = () => {
+  const handleInputSubmit = useCallback(() => {
     const value = parseFloat(inputValue);
     if (!isNaN(value)) {
       let normalizedAngle = ((value % 360) + 360) % 360;
@@ -74,7 +92,7 @@ const AngleWheel = ({
       setInputValue(selectedAngle.toString());
     }
     setIsEditing(false);
-  };
+  }, [inputValue, selectedAngle]);
 
   const handleInputKeyDown = (e) => {
     if (e.key === 'Enter') {
@@ -107,7 +125,7 @@ const AngleWheel = ({
     lastYRef.current = e.clientY;
   };
 
-  const handleMouseMove = (e) => {
+  const handleMouseMove = useCallback((e: MouseEvent) => {
     if (!isDragging) return;
     
     const deltaY = lastYRef.current - e.clientY;
@@ -121,11 +139,11 @@ const AngleWheel = ({
     });
     
     lastYRef.current = e.clientY;
-  };
+  }, [isDragging]);
 
-  const handleMouseUp = () => {
+  const handleMouseUp = useCallback(() => {
     setIsDragging(false);
-  };
+  }, []);
 
   // Add global mouse event listeners
   useEffect(() => {
@@ -137,11 +155,11 @@ const AngleWheel = ({
         document.removeEventListener('mouseup', handleMouseUp);
       };
     }
-  }, [isDragging]);
+  }, [isDragging, handleMouseMove, handleMouseUp]);
 
   // Generate angle marks for the wheel - create seamless circular loop
-  const generateAngleMarks = () => {
-    const marks = [];
+  const generateAngleMarks = (): AngleMark[] => {
+    const marks: AngleMark[] = [];
     // Create enough marks to fill the visible area plus buffer
     const totalMarks = Math.ceil(parseInt(height) / 16) + 20; // 16px per mark spacing
     const startAngle = selectedAngle - (totalMarks / 2) * 10;
@@ -242,8 +260,8 @@ const AngleWheel = ({
               display: 'inline-block',
               userSelect: 'none'
             }}
-            onMouseEnter={(e) => e.target.style.backgroundColor = 'rgba(37, 99, 235, 0.1)'}
-            onMouseLeave={(e) => e.target.style.backgroundColor = 'transparent'}
+            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(37, 99, 235, 0.1)'}
+            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
             title="Click to edit angle manually"
           >
             {selectedAngle}°
@@ -390,4 +408,3 @@ const AngleWheel = ({
 };
 
 export default AngleWheel;
-
