@@ -1,11 +1,9 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import AngleWheel from './AngleWheel';
 
 const MainPage = () => {
   const [selectedAngle, setSelectedAngle] = useState(0);
-  const [isDragging, setIsDragging] = useState(false);
-  const wheelRef = useRef(null);
-  const lastYRef = useRef(0);
 
   // Hardcoded JSON data with angle and acceleration values
   // Simulating a sinusoidal relationship for realistic physics data
@@ -49,66 +47,6 @@ const MainPage = () => {
     { angle: 360, acceleration: 0 }
   ];
 
-  // Handle wheel scroll
-  const handleWheel = (e) => {
-    e.preventDefault();
-    const delta = e.deltaY > 0 ? 5 : -5;
-    setSelectedAngle(prev => {
-      let newAngle = prev + delta;
-      if (newAngle < 0) newAngle = 360 + newAngle;
-      if (newAngle >= 360) newAngle = newAngle - 360;
-      return newAngle;
-    });
-  };
-
-  // Handle mouse drag
-  const handleMouseDown = (e) => {
-    setIsDragging(true);
-    lastYRef.current = e.clientY;
-  };
-
-  const handleMouseMove = (e) => {
-    if (!isDragging) return;
-    
-    const deltaY = lastYRef.current - e.clientY;
-    const angleDelta = deltaY * 0.5; // Sensitivity adjustment
-    
-    setSelectedAngle(prev => {
-      let newAngle = prev + angleDelta;
-      if (newAngle < 0) newAngle = 360 + (newAngle % 360);
-      if (newAngle >= 360) newAngle = newAngle % 360;
-      return Math.round(newAngle);
-    });
-    
-    lastYRef.current = e.clientY;
-  };
-
-  const handleMouseUp = () => {
-    setIsDragging(false);
-  };
-
-  // Add global mouse event listeners
-  useEffect(() => {
-    if (isDragging) {
-      document.addEventListener('mousemove', handleMouseMove);
-      document.addEventListener('mouseup', handleMouseUp);
-      return () => {
-        document.removeEventListener('mousemove', handleMouseMove);
-        document.removeEventListener('mouseup', handleMouseUp);
-      };
-    }
-  }, [isDragging]);
-
-  // Generate angle marks for the wheel
-  const generateAngleMarks = () => {
-    const marks = [];
-    for (let i = 0; i < 360; i += 10) {
-      marks.push(i);
-    }
-    return marks;
-  };
-
-  const angleMarks = generateAngleMarks();
   const currentAcceleration = data.find(d => Math.abs(d.angle - selectedAngle) <= 5)?.acceleration || 0;
 
   return (
@@ -149,166 +87,14 @@ const MainPage = () => {
           flexWrap: 'wrap'
         }}>
           {/* Angle Wheel Control */}
-          <div style={{
-            backgroundColor: 'white',
-            borderRadius: '12px',
-            boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
-            padding: '20px',
-            width: '280px',
-            minWidth: '280px',
-            flexShrink: 0
-          }}>
-            <h3 style={{
-              fontSize: '20px',
-              fontWeight: '600',
-              marginBottom: '16px',
-              textAlign: 'center',
-              color: '#1f2937',
-              margin: '0 0 16px 0'
-            }}>
-              Angle Selector
-            </h3>
-            
-            {/* Current angle display */}
-            <div style={{
-              textAlign: 'center',
-              marginBottom: '20px',
-              padding: '16px',
-              backgroundColor: '#f0f9ff',
-              borderRadius: '8px',
-              border: '1px solid #e0f2fe'
-            }}>
-              <div style={{
-                fontSize: '42px',
-                fontWeight: 'bold',
-                color: '#2563eb',
-                lineHeight: 1,
-                marginBottom: '4px'
-              }}>
-                {selectedAngle}°
-              </div>
-              <div style={{
-                fontSize: '14px',
-                color: '#64748b'
-              }}>
-                Acceleration: {currentAcceleration.toFixed(2)} m/s²
-              </div>
-            </div>
-            
-            {/* Scrollable wheel */}
-            <div style={{
-              position: 'relative',
-              height: '320px',
-              overflow: 'hidden',
-              border: '2px solid #e5e7eb',
-              borderRadius: '8px',
-              cursor: isDragging ? 'grabbing' : 'grab',
-              userSelect: 'none',
-              backgroundColor: '#fafafa'
-            }}
-              ref={wheelRef}
-              onWheel={handleWheel}
-              onMouseDown={handleMouseDown}
-            >
-              {/* Gradient overlay */}
-              <div style={{
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                right: 0,
-                bottom: 0,
-                background: 'linear-gradient(to bottom, rgba(255,255,255,0.9) 0%, transparent 20%, transparent 80%, rgba(255,255,255,0.9) 100%)',
-                pointerEvents: 'none',
-                zIndex: 10
-              }}></div>
-              
-              {/* Center indicator line */}
-              <div style={{
-                position: 'absolute',
-                left: 0,
-                right: 0,
-                top: '50%',
-                height: '2px',
-                backgroundColor: '#2563eb',
-                zIndex: 20,
-                transform: 'translateY(-1px)'
-              }}></div>
-              <div style={{
-                position: 'absolute',
-                left: 0,
-                width: '16px',
-                top: '50%',
-                height: '2px',
-                backgroundColor: '#1d4ed8',
-                zIndex: 20,
-                transform: 'translateY(-1px)'
-              }}></div>
-              <div style={{
-                position: 'absolute',
-                right: 0,
-                width: '16px',
-                top: '50%',
-                height: '2px',
-                backgroundColor: '#1d4ed8',
-                zIndex: 20,
-                transform: 'translateY(-1px)'
-              }}></div>
-              
-              {/* Angle marks */}
-              <div style={{
-                position: 'relative',
-                transform: `translateY(${160 - (selectedAngle * 1.6)}px)`,
-                transition: isDragging ? 'none' : 'transform 0.1s ease-out',
-                paddingTop: '200px',
-                paddingBottom: '200px'
-              }}>
-                {angleMarks.map((angle) => {
-                  const distance = Math.abs(angle - selectedAngle);
-                  const minDistance = Math.min(distance, 360 - distance);
-                  const opacity = Math.max(0.3, 1 - minDistance / 60);
-                  const scale = Math.max(0.85, 1 - minDistance / 120);
-                  
-                  return (
-                    <div
-                      key={angle}
-                      style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        padding: '6px 12px',
-                        opacity,
-                        transform: `scale(${scale})`,
-                        transformOrigin: 'left center'
-                      }}
-                    >
-                      <div style={{
-                        width: angle % 30 === 0 ? '12px' : '8px',
-                        height: '2px',
-                        marginRight: '12px',
-                        backgroundColor: angle % 30 === 0 ? '#374151' : '#9ca3af'
-                      }}></div>
-                      <span style={{
-                        fontSize: '14px',
-                        fontWeight: angle % 30 === 0 ? 'bold' : 'normal',
-                        color: angle % 30 === 0 ? '#374151' : '#6b7280'
-                      }}>
-                        {angle}°
-                      </span>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-            
-            <p style={{
-              fontSize: '12px',
-              color: '#9ca3af',
-              marginTop: '12px',
-              textAlign: 'center',
-              margin: '12px 0 0 0'
-            }}>
-              Scroll or drag to change angle
-            </p>
-          </div>
+          <AngleWheel
+            initialAngle={selectedAngle}
+            onAngleChange={setSelectedAngle}
+            currentValue={currentAcceleration}
+            valueLabel="Acceleration"
+            valueUnit="m/s²"
+            title="Angle Selector"
+          />
           
           {/* Graph */}
           <div style={{
