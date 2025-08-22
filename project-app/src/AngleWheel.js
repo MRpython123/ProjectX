@@ -1,3 +1,17 @@
+/*
+USAGE:
+
+<AngleWheel
+    initialAngle={selectedAngle}
+    onAngleChange={setSelectedAngle}
+    currentValue={currentAcceleration}
+    valueLabel="Acceleration"
+    valueUnit="m/s²"
+    title="Angle Selector"
+/>
+*/
+
+
 import React, { useState, useRef, useEffect } from 'react';
 
 const AngleWheel = ({ 
@@ -178,15 +192,63 @@ const AngleWheel = ({
         borderRadius: '8px',
         border: '1px solid #e0f2fe'
       }}>
-        <div style={{
-          fontSize: '42px',
-          fontWeight: 'bold',
-          color: '#2563eb',
-          lineHeight: 1,
-          marginBottom: '4px'
-        }}>
-          {selectedAngle}°
-        </div>
+        {isEditing ? (
+          <div style={{ position: 'relative', display: 'inline-block' }}>
+            <input
+              ref={inputRef}
+              type="number"
+              value={inputValue}
+              onChange={handleInputChange}
+              onKeyDown={handleInputKeyDown}
+              onBlur={handleInputBlur}
+              min="0"
+              max="359"
+              step="1"
+              style={{
+                fontSize: '36px',
+                fontWeight: 'bold',
+                color: '#2563eb',
+                lineHeight: 1,
+                background: 'white',
+                border: '2px solid #2563eb',
+                borderRadius: '6px',
+                textAlign: 'center',
+                width: '120px',
+                padding: '8px',
+                outline: 'none',
+                fontFamily: 'inherit'
+              }}
+            />
+            <span style={{
+              fontSize: '36px',
+              fontWeight: 'bold',
+              color: '#2563eb',
+              marginLeft: '4px'
+            }}>°</span>
+          </div>
+        ) : (
+          <div 
+            onClick={handleInputClick}
+            style={{
+              fontSize: '42px',
+              fontWeight: 'bold',
+              color: '#2563eb',
+              lineHeight: 1,
+              marginBottom: '4px',
+              cursor: 'pointer',
+              padding: '8px 12px',
+              borderRadius: '6px',
+              transition: 'background-color 0.2s',
+              display: 'inline-block',
+              userSelect: 'none'
+            }}
+            onMouseEnter={(e) => e.target.style.backgroundColor = 'rgba(37, 99, 235, 0.1)'}
+            onMouseLeave={(e) => e.target.style.backgroundColor = 'transparent'}
+            title="Click to edit angle manually"
+          >
+            {selectedAngle}°
+          </div>
+        )}
         {currentValue !== null && (
           <div style={{
             fontSize: '14px',
@@ -328,3 +390,4 @@ const AngleWheel = ({
 };
 
 export default AngleWheel;
+
