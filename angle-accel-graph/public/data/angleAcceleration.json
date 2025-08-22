@@ -1,0 +1,21 @@
+[
+  { "angle": -90, "acceleration": -1.0 },
+  { "angle": -80, "acceleration": -0.985 },
+  { "angle": -70, "acceleration": -0.94 },
+  { "angle": -60, "acceleration": -0.866 },
+  { "angle": -50, "acceleration": -0.766 },
+  { "angle": -40, "acceleration": -0.643 },
+  { "angle": -30, "acceleration": -0.5 },
+  { "angle": -20, "acceleration": -0.342 },
+  { "angle": -10, "acceleration": -0.173 },
+  { "angle": 0, "acceleration": 0 },
+  { "angle": 10, "acceleration": 0.173 },
+  { "angle": 20, "acceleration": 0.342 },
+  { "angle": 30, "acceleration": 0.5 },
+  { "angle": 40, "acceleration": 0.643 },
+  { "angle": 50, "acceleration": 0.766 },
+  { "angle": 60, "acceleration": 0.866 },
+  { "angle": 70, "acceleration": 0.94 },
+  { "angle": 80, "acceleration": 0.985 },
+  { "angle": 90, "acceleration": 1.0 }
+]
