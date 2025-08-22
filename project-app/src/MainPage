@@ -1,0 +1,7 @@
+const API_URL = "server_url";
+
+const MainPage = () => {
+    
+};
+
+export default MainPage;
